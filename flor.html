@@ -5,7 +5,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <!-- DEDICA:META -->
-  <title>Feliz Día de las Flores Amarillas 🌻</title>
+  <title>Feliz mes de las Flores Amarillas 🌻</title>
   <meta name="description"
     content="Una galaxia mágica con agujero negro, anillo dorado, flores flotando y frases especiales para celebrar el Día de las Flores Amarillas.">
   <link rel="icon"
@@ -257,13 +257,11 @@
       font-weight: 300;
     }
 
-    /* HUD Buttons */
+    /* HUD Button (Música) */
     .hud-container {
       position: fixed;
       top: 25px;
       right: 25px;
-      display: flex;
-      gap: 12px;
       z-index: 30;
     }
 
@@ -271,37 +269,44 @@
       .hud-container {
         top: 15px;
         right: 15px;
-        gap: 8px;
       }
     }
 
     .hud-btn {
-      background: rgba(25, 20, 10, 0.65);
+      background: rgba(25, 20, 10, 0.7);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 215, 0, 0.45);
+      border: 1px solid rgba(255, 215, 0, 0.5);
       color: #FFF8DC;
-      border-radius: 30px;
-      padding: 8px 16px;
-      font-size: 0.9em;
-      font-weight: 600;
+      border-radius: 50%;
+      width: 46px;
+      height: 46px;
+      font-size: 1.35em;
       cursor: pointer;
       display: flex;
+      justify-content: center;
       align-items: center;
-      gap: 6px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), 0 0 10px rgba(255, 215, 0, 0.2);
-      transition: all 0.25s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), 0 0 12px rgba(255, 215, 0, 0.25);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @media (max-width:768px) {
+      .hud-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.15em;
+      }
     }
 
     .hud-btn:hover {
-      background: rgba(40, 30, 12, 0.85);
+      background: rgba(45, 32, 12, 0.9);
       border-color: #FFD700;
-      box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
-      transform: translateY(-2px);
+      box-shadow: 0 0 18px rgba(255, 215, 0, 0.6);
+      transform: scale(1.08);
     }
 
     .hud-btn:active {
-      transform: translateY(0);
+      transform: scale(0.96);
     }
 
     /* Contenedor de lluvia de pétalos */
@@ -365,15 +370,10 @@
 
   <h1 id="main-title"></h1>
 
-  <!-- HUD con botones de control (Pétalos y Música) -->
+  <!-- HUD con botón de Música simplificado (sólo icono) -->
   <div class="hud-container">
-    <button id="petals-toggle-btn" class="hud-btn" title="Activar/desactivar pétalos">
-      <span>🌸</span>
-      <span>Pétalos</span>
-    </button>
-    <button id="sound-btn" class="hud-btn" title="Activar/desactivar música">
+    <button id="sound-btn" class="hud-btn" title="Silenciar / Activar música" aria-label="Control de música">
       <span id="sound-icon">🎵</span>
-      <span id="sound-label">Música</span>
     </button>
   </div>
 
@@ -396,7 +396,7 @@
       <span>Toca para iniciar</span>
       <span>🌻</span>
     </div>
-    <div class="start-subtext">Diseñado con amor y amistad para este día especial</div>
+    <div class="start-subtext">Diseñado con un cariño especial</div>
   </div>
 
   <audio id="audio" loop>
@@ -553,21 +553,10 @@
       createPetal();
     }
 
-    const petalsToggleBtn = document.getElementById('petals-toggle-btn');
-    if (petalsToggleBtn) {
-      petalsToggleBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        petalsActive = !petalsActive;
-        if (petalsContainer) petalsContainer.style.display = petalsActive ? 'block' : 'none';
-        petalsToggleBtn.style.opacity = petalsActive ? '1' : '0.6';
-      });
-    }
-
     // ================= Música & Sintetizador Web Audio =================
     const audio = document.getElementById('audio');
     const soundBtn = document.getElementById('sound-btn');
     const soundIcon = document.getElementById('sound-icon');
-    const soundLabel = document.getElementById('sound-label');
 
     let audioCtx = null;
     let synthInterval = null;
@@ -637,13 +626,13 @@
 
     function playAudioTrack() {
       if (isMuted || !audio) return;
-      
+
       const trackSrc = (CONFIG && CONFIG.musica) ? CONFIG.musica : 'assets/musica.mp3';
-      
+
       // Intentar primero con la fuente configurada
       audio.src = trackSrc;
       const playPromise = audio.play();
-      
+
       if (playPromise !== undefined) {
         playPromise
           .then(() => {
@@ -679,11 +668,11 @@
           if (audio) audio.pause();
           stopMelodySynth();
           if (soundIcon) soundIcon.textContent = '🔇';
-          if (soundLabel) soundLabel.textContent = 'Silencio';
+          soundBtn.setAttribute('title', 'Activar música');
           soundBtn.style.opacity = '0.65';
         } else {
           if (soundIcon) soundIcon.textContent = '🎵';
-          if (soundLabel) soundLabel.textContent = 'Música';
+          soundBtn.setAttribute('title', 'Silenciar música');
           soundBtn.style.opacity = '1';
           if (audioPlayedSuccessfully && audio) {
             audio.play().catch(() => startMelodySynth());
